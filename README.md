@@ -81,8 +81,7 @@ Each profile contains the following information:
 
 ## Contributors
 
-- [Your Name] - Project Lead
-
+Abhinav Sheema Pramod
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
