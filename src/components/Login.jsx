@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -22,7 +22,7 @@ import PersonIcon from "@mui/icons-material/Person";
 function Login({ isLoggedIn, setIsLoggedIn }) {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    email: "",
+    username: "",
     password: ""
   });
   const [errors, setErrors] = useState({});
@@ -34,10 +34,11 @@ function Login({ isLoggedIn, setIsLoggedIn }) {
     severity: "success"
   });
 
-  if (isLoggedIn) {
-    navigate("/");
-    return null;
-  }
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/");
+    }
+  }, [isLoggedIn, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -49,7 +50,7 @@ function Login({ isLoggedIn, setIsLoggedIn }) {
 
   const validateForm = () => {
     let temp = {};
-    temp.email = /\S+@\S+\.\S+/.test(formData.email) ? "" : "Email is not valid";
+    temp.username = formData.username ? "" : "Username is required";
     temp.password = formData.password ? "" : "Password is required";
     
     setErrors(temp);
@@ -63,20 +64,16 @@ function Login({ isLoggedIn, setIsLoggedIn }) {
       setLoading(true);
       
       setTimeout(() => {
-        const users = JSON.parse(localStorage.getItem("users") || "[]");
-        const user = users.find(u => u.email === formData.email.trim());
+        // For demo purposes, allow any login
+        const demoUser = {
+          id: "demo123",
+          name: "Demo User",
+          username: formData.username.trim()
+        };
         
-        if (user && user.password === formData.password) {
-          localStorage.setItem("currentUser", JSON.stringify(user));
-          setIsLoggedIn(true);
-          navigate("/");
-        } else {
-          setSnackbar({
-            open: true,
-            message: "Invalid email or password",
-            severity: "error"
-          });
-        }
+        localStorage.setItem("currentUser", JSON.stringify(demoUser));
+        setIsLoggedIn(true);
+        navigate("/");
         
         setLoading(false);
       }, 1000);
@@ -94,8 +91,12 @@ function Login({ isLoggedIn, setIsLoggedIn }) {
     setShowPassword(!showPassword);
   };
 
+  if (isLoggedIn) {
+    return null;
+  }
+
   return (
-    <Box sx={{ display: "flex", justifyContent: "center", mt: 8, px: 2 }}>
+    <Box sx={{ display: "flex", justifyContent: "center", mt: 4, px: 2 }}>
       <Paper elevation={3} sx={{ p: 4, width: "100%", maxWidth: 500 }}>
         <Box sx={{ textAlign: "center", mb: 3 }}>
           <Typography variant="h4" component="h1" gutterBottom>
@@ -110,14 +111,13 @@ function Login({ isLoggedIn, setIsLoggedIn }) {
           <Grid container spacing={3}>
             <Grid item xs={12}>
               <TextField
-                type="email"
-                name="email"
-                label="Email Address"
-                value={formData.email}
+                name="username"
+                label="Username"
+                value={formData.username}
                 onChange={handleChange}
                 fullWidth
-                error={!!errors.email}
-                helperText={errors.email}
+                error={!!errors.username}
+                helperText={errors.username}
                 required
                 InputProps={{
                   startAdornment: (

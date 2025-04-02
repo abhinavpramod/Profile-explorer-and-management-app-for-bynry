@@ -8,11 +8,11 @@ import Typography from '@mui/material/Typography';
 import InputBase from '@mui/material/InputBase';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
-import { useState } from 'react';
-import { Link,useNavigate } from 'react-router-dom';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
+import { useNavigate } from 'react-router-dom';
 import "./Navbar.css";
-
-
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -56,57 +56,65 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function SearchAppBar({text,setText,isLogin,setIsLogin}) {
-    const nav=useNavigate();
+export default function SearchAppBar({ text, setText, isLogin, setIsLogin }) {
+  const navigate = useNavigate();
     
-   const handleInputChange=(e)=>{
-        setText(e.target.value);
-   }
+  const handleInputChange = (e) => {
+    setText(e.target.value);
+  };
     
-   const handleClick=()=>{
-        nav("/");
-        setIsLogin(!isLogin)
-   }
+  const handleLogout = () => {
+    // Remove the user from localStorage
+    localStorage.removeItem("currentUser");
+    setIsLogin(false);
+    navigate("/");
+  };
+
+  const handleAdminClick = () => {
+    navigate("/admin");
+  };
+  
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+      <AppBar position="fixed">
         <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
           <Typography
             variant="h6"
             noWrap
             component="div"
-            sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+            sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' }, cursor: 'pointer' }}
+            onClick={() => navigate("/")}
           >
             Profile Explorer App
           </Typography>
-          <div className='btn' onClick={() => nav("/")} style={{ marginRight: '15px' }}>Home</div>
-          <Search value={text} onChange={handleInputChange}>
+          
+          <Search>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
             <StyledInputBase
               placeholder="Search…"
               inputProps={{ 'aria-label': 'search' }}
+              value={text}
+              onChange={handleInputChange}
             />
           </Search>
-          {isLogin ? (
-            <div className='btn' onClick={handleClick}>Logout</div>
-          ) : (
-            <>
-              <div className='btn' onClick={() => nav("/login")}>Login</div>
-              <div className='btn' onClick={() => nav("/signup")}>Sign Up</div>
-            </>
-          )}
           
+          <Box sx={{ display: 'flex', ml: 2 }}>
+            <div className='btn' onClick={() => navigate("/")}>Home</div>
+            
+            {isLogin ? (
+              <>
+                <div className='btn' onClick={handleAdminClick}>Admin</div>
+                <div className='btn' onClick={handleLogout}>Logout</div>
+              </>
+            ) : (
+              <>
+                <div className='btn' onClick={() => navigate("/login")}>Login</div>
+                <div className='btn' onClick={() => navigate("/signup")}>Sign Up</div>
+              </>
+            )}
+          </Box>
         </Toolbar>
       </AppBar>
     </Box>

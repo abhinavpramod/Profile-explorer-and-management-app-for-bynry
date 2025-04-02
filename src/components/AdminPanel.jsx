@@ -22,7 +22,11 @@ import {
   Avatar,
   FormHelperText,
   Card,
-  CardMedia
+  CardMedia,
+  DialogActions,
+  Modal,
+  Backdrop,
+  Fade
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
@@ -31,6 +35,9 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import DeleteIcon from "@mui/icons-material/Delete";
 import HelpIcon from "@mui/icons-material/Help";
 import PhotoIcon from "@mui/icons-material/Photo";
+import EditIcon from "@mui/icons-material/Edit";
+import FullscreenIcon from "@mui/icons-material/Fullscreen";
+import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
 import { v4 as uuidv4 } from "uuid";
 
 function AdminPanel({ profiles, setProfiles, resetToDefaultProfiles }) {
@@ -63,6 +70,13 @@ function AdminPanel({ profiles, setProfiles, resetToDefaultProfiles }) {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editProfileId, setEditProfileId] = useState(null);
   const defaultProfileImage = "https://via.placeholder.com/300x200?text=Profile+Image";
+  
+  // New state for full profile image viewing
+  const [fullImageDialog, setFullImageDialog] = useState({
+    open: false,
+    imageUrl: "",
+    profileName: ""
+  });
   
   useEffect(() => {
     if (imagePreview) {
@@ -200,8 +214,7 @@ function AdminPanel({ profiles, setProfiles, resetToDefaultProfiles }) {
         } else {
           const newProfile = {
             ...formData,
-            id: uuidv4(),
-            isFollowing: false
+            id: uuidv4()
           };
           setProfiles([...profiles, newProfile]);
           setSnackbar({
@@ -269,6 +282,22 @@ function AdminPanel({ profiles, setProfiles, resetToDefaultProfiles }) {
   
   const handleCloseImageHelp = () => {
     setShowImageHelp(false);
+  };
+  
+  // New handlers for full profile image dialog
+  const handleOpenFullImage = (imageUrl, profileName) => {
+    setFullImageDialog({
+      open: true,
+      imageUrl: imageUrl || defaultProfileImage,
+      profileName
+    });
+  };
+  
+  const handleCloseFullImage = () => {
+    setFullImageDialog({
+      ...fullImageDialog,
+      open: false
+    });
   };
   
   return (
@@ -375,18 +404,34 @@ function AdminPanel({ profiles, setProfiles, resetToDefaultProfiles }) {
                 <Typography variant="subtitle2" gutterBottom>
                   Image Preview:
                 </Typography>
-                <Card sx={{ maxWidth: 300, mx: "auto" }}>
-                  <CardMedia
-                    component="img"
-                    height="200"
-                    image={imagePreview}
-                    alt="Profile preview"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = defaultProfileImage;
+                <Box sx={{ position: 'relative', maxWidth: 300, mx: "auto" }}>
+                  <Card>
+                    <CardMedia
+                      component="img"
+                      height="200"
+                      image={imagePreview}
+                      alt="Profile preview"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = defaultProfileImage;
+                      }}
+                    />
+                  </Card>
+                  <IconButton
+                    sx={{
+                      position: 'absolute',
+                      top: 8,
+                      right: 8,
+                      backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                      '&:hover': {
+                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                      }
                     }}
-                  />
-                </Card>
+                    onClick={() => handleOpenFullImage(imagePreview, `${formData.firstName} ${formData.lastName}`)}
+                  >
+                    <ZoomOutMapIcon />
+                  </IconButton>
+                </Box>
               </Grid>
             )}
             
@@ -420,7 +465,7 @@ function AdminPanel({ profiles, setProfiles, resetToDefaultProfiles }) {
               />
             </Grid>
             
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={6}>
               <TextField
                 label="Latitude"
                 name="address-coordinates-lat"
@@ -428,11 +473,11 @@ function AdminPanel({ profiles, setProfiles, resetToDefaultProfiles }) {
                 onChange={handleInputChange}
                 fullWidth
                 type="number"
-                inputProps={{ step: "0.000001" }}
+                step="0.000001"
               />
             </Grid>
             
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={6}>
               <TextField
                 label="Longitude"
                 name="address-coordinates-lng"
@@ -440,12 +485,17 @@ function AdminPanel({ profiles, setProfiles, resetToDefaultProfiles }) {
                 onChange={handleInputChange}
                 fullWidth
                 type="number"
-                inputProps={{ step: "0.000001" }}
+                step="0.000001"
               />
             </Grid>
             
             <Grid item xs={12}>
-              <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mt: 2 }}>
+              <Box sx={{ 
+                display: "flex", 
+                justifyContent: "flex-end", 
+                gap: 2,
+                mt: 2 
+              }}>
                 <Button
                   variant="outlined"
                   color="secondary"
@@ -474,13 +524,6 @@ function AdminPanel({ profiles, setProfiles, resetToDefaultProfiles }) {
           <Typography variant="h5">
             Manage Profiles ({profiles.length})
           </Typography>
-          <Button 
-            variant="contained" 
-            color="secondary" 
-            onClick={resetToDefaultProfiles}
-          >
-            Reset to Demo Profiles
-          </Button>
         </Box>
         
         <Divider sx={{ mb: 3 }} />
@@ -506,15 +549,50 @@ function AdminPanel({ profiles, setProfiles, resetToDefaultProfiles }) {
                   }}
                 >
                   <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <Avatar 
-                      src={profile.image || defaultProfileImage}
-                      alt={`${profile.firstName} ${profile.lastName}`}
-                      sx={{ width: 50, height: 50 }}
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = defaultProfileImage;
-                      }}
-                    />
+                    <Box sx={{ position: 'relative' }}>
+                      <Avatar 
+                        src={profile.image || defaultProfileImage}
+                        alt={`${profile.firstName} ${profile.lastName}`}
+                        sx={{ 
+                          width: 60, 
+                          height: 60,
+                          cursor: 'pointer',
+                          '&:hover': { 
+                            boxShadow: '0 0 0 2px #1976d2',
+                            transition: 'box-shadow 0.2s'
+                          }
+                        }}
+                        onClick={() => handleOpenFullImage(
+                          profile.image || defaultProfileImage, 
+                          `${profile.firstName} ${profile.lastName}`
+                        )}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = defaultProfileImage;
+                        }}
+                      />
+                      <Tooltip title="View full image">
+                        <IconButton
+                          size="small"
+                          sx={{
+                            position: 'absolute',
+                            bottom: -10,
+                            right: -10,
+                            backgroundColor: 'white',
+                            border: '1px solid #e0e0e0',
+                            '&:hover': {
+                              backgroundColor: '#f5f5f5'
+                            }
+                          }}
+                          onClick={() => handleOpenFullImage(
+                            profile.image || defaultProfileImage, 
+                            `${profile.firstName} ${profile.lastName}`
+                          )}
+                        >
+                          <FullscreenIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
                     <Box>
                       <Typography variant="subtitle1">
                         {profile.firstName} {profile.lastName}
@@ -544,6 +622,7 @@ function AdminPanel({ profiles, setProfiles, resetToDefaultProfiles }) {
         )}
       </Paper>
       
+      {/* Dialog for image help */}
       <Dialog
         open={showImageHelp}
         onClose={handleCloseImageHelp}
@@ -591,6 +670,67 @@ function AdminPanel({ profiles, setProfiles, resetToDefaultProfiles }) {
         </DialogContent>
       </Dialog>
       
+      {/* New Dialog for full image view */}
+      <Dialog
+        open={fullImageDialog.open}
+        onClose={handleCloseFullImage}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: {
+            overflow: 'visible',
+            borderRadius: 2
+          }
+        }}
+      >
+        <DialogTitle>
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            {fullImageDialog.profileName}'s Profile Picture
+            <IconButton 
+              edge="end" 
+              color="inherit" 
+              onClick={handleCloseFullImage} 
+              aria-label="close"
+            >
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        </DialogTitle>
+        <DialogContent sx={{ padding: 0, overflow: 'hidden' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              bgcolor: '#f5f5f5',
+              width: '100%',
+              height: '500px',
+              overflow: 'hidden',
+              position: 'relative'
+            }}
+          >
+            <img
+              src={fullImageDialog.imageUrl}
+              alt={fullImageDialog.profileName}
+              style={{
+                maxWidth: '100%',
+                maxHeight: '100%',
+                objectFit: 'contain'
+              }}
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = defaultProfileImage;
+              }}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: 'center', py: 2 }}>
+          <Button onClick={handleCloseFullImage} variant="contained">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+      
       <Snackbar 
         open={snackbar.open} 
         autoHideDuration={6000} 
@@ -609,7 +749,5 @@ function AdminPanel({ profiles, setProfiles, resetToDefaultProfiles }) {
     </Box>
   );
 }
-
-import EditIcon from "@mui/icons-material/Edit";
 
 export default AdminPanel;

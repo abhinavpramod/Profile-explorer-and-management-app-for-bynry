@@ -28,7 +28,7 @@ import CachedIcon from "@mui/icons-material/Cached";
 
 import Card from "./Card";
 
-function CardWrapper({ profiles, onToggleFollowStatus, loadingProfiles }) {
+function CardWrapper({ profiles, loadingProfiles }) {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedState, setSelectedState] = useState("");
@@ -236,16 +236,16 @@ function CardWrapper({ profiles, onToggleFollowStatus, loadingProfiles }) {
           <Box sx={{ 
             display: "grid", 
             gridTemplateColumns: viewMode === "grid" 
-              ? { xs: "1fr", sm: "1fr 1fr", md: "1fr 1fr 1fr", lg: "1fr 1fr 1fr 1fr" } 
+              ? { xs: "1fr", sm: "repeat(2, 1fr)", md: "repeat(3, 1fr)", lg: "repeat(4, 1fr)" } 
               : "1fr", 
-            gap: 3 
+            gap: viewMode === "grid" ? 3 : 2,
+            mb: 4
           }}>
             {getPageData().map(profile => (
               <Card 
                 key={profile.id} 
                 profile={profile} 
                 viewMode={viewMode}
-                onToggleFollowStatus={onToggleFollowStatus}
               />
             ))}
           </Box>

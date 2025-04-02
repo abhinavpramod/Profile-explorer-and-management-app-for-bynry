@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -7,12 +7,9 @@ import {
   Box,
   Chip,
   Button,
-  Avatar,
   Divider,
   Grid,
   Paper,
-  Link,
-  IconButton,
   Skeleton,
   Alert
 } from "@mui/material";
@@ -28,12 +25,20 @@ const defaultImage = "https://via.placeholder.com/400x200?text=Profile+Image";
 function Detail({ profiles }) {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showMap, setShowMap] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    if (queryParams.get('showMap') === 'true') {
+      setShowMap(true);
+    }
+  }, [location]);
 
   useEffect(() => {
     setLoading(true);
@@ -50,21 +55,8 @@ function Detail({ profiles }) {
           setLoading(false);
         }
       } else {
-        fetch(`https://fakestoreapi.com/users/${id}`)
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('Profile not found');
-            }
-            return response.json();
-          })
-          .then(data => {
-            setProfile(data);
-            setLoading(false);
-          })
-          .catch(err => {
-            setError(err.message);
-            setLoading(false);
-          });
+        setError("No profiles available");
+        setLoading(false);
       }
     } catch (err) {
       setError("Error loading profile");
@@ -87,6 +79,19 @@ function Detail({ profiles }) {
   const handleImageError = () => {
     setImageError(true);
   };
+
+  const scrollToMap = () => {
+    const mapSection = document.getElementById('map-section');
+    if (mapSection) {
+      mapSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  useEffect(() => {
+    if (showMap && !loading && profile) {
+      setTimeout(scrollToMap, 100);
+    }
+  }, [showMap, loading, profile]);
 
   if (loading) {
     return (
@@ -138,6 +143,8 @@ function Detail({ profiles }) {
   const hasAddress = profile.address && 
     (profile.address.city || profile.address.state || 
     (profile.address.coordinates && (profile.address.coordinates.lat || profile.address.coordinates.lng)));
+  
+  const hasCoordinates = profile.address?.coordinates?.lat && profile.address?.coordinates?.lng;
 
   return (
     <Box sx={{ maxWidth: 800, mx: "auto", mt: 4, mb: 4, px: 2 }}>
@@ -151,192 +158,172 @@ function Detail({ profiles }) {
       </Button>
       
       <Paper elevation={3} sx={{ overflow: "hidden" }}>
-        <Box sx={{ position: "relative", height: "200px", overflow: "hidden", bgcolor: "#f5f5f5" }}>
-          {!imageLoaded && !imageError && (
-            <Skeleton 
-              variant="rectangular" 
-              width="100%" 
-              height="100%" 
-              animation="wave" 
-            />
-          )}
-          <Box 
-            component="img"
-            src={imageError ? defaultImage : (profile.image || defaultImage)}
-            alt={`${profile.firstName} ${profile.lastName}`}
-            onLoad={handleImageLoad}
-            onError={handleImageError}
-            sx={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              objectPosition: "center",
-              display: imageLoaded ? "block" : "none"
-            }}
-          />
-          <Box 
-            sx={{ 
-              position: "absolute", 
-              bottom: 0, 
-              left: 0, 
-              right: 0, 
-              p: 2,
-              background: "linear-gradient(to top, rgba(0,0,0,0.7), transparent)",
-              color: "white"
-            }}
-          >
-            <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+        <Grid container>
+          {/* Image section - displays full image */}
+          <Grid item xs={12} md={5} sx={{ bgcolor: "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Box sx={{ p: 3, width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              {!imageLoaded && !imageError && (
+                <Skeleton 
+                  variant="rectangular" 
+                  width="100%" 
+                  height="300px" 
+                  animation="wave" 
+                />
+              )}
+              <Box 
+                component="img"
+                src={imageError ? defaultImage : (profile.image || defaultImage)}
+                alt={`${profile.firstName} ${profile.lastName}`}
+                onLoad={handleImageLoad}
+                onError={handleImageError}
+                sx={{
+                  maxWidth: "100%",
+                  maxHeight: "300px",
+                  objectFit: "contain",
+                  display: imageLoaded ? "block" : "none",
+                  borderRadius: 1
+                }}
+              />
+            </Box>
+          </Grid>
+          
+          {/* Profile info section */}
+          <Grid item xs={12} md={7} sx={{ p: 3 }}>
+            <Typography variant="h4" sx={{ fontWeight: "bold", mb: 1 }}>
               {profile.firstName} {profile.lastName}
             </Typography>
-          </Box>
-        </Box>
+            
+            {profile.company && profile.company.name && (
+              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                <BusinessIcon sx={{ mr: 1, color: "primary.main", fontSize: 20 }} />
+                <Typography variant="h6" color="text.secondary">
+                  {profile.company.name}
+                </Typography>
+              </Box>
+            )}
+            
+            {hasAddress && (
+              <Typography variant="body1" sx={{ mb: 1, display: "flex", alignItems: "center" }}>
+                <LocationOnIcon sx={{ mr: 1, color: "error.main", fontSize: 20 }} />
+                {profile.address.city && profile.address.state ? 
+                  `${profile.address.city}, ${profile.address.state}` : 
+                  "Address details incomplete"}
+              </Typography>
+            )}
+            
+            <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+              <EmailIcon sx={{ mr: 1, color: "success.main", fontSize: 20 }} />
+              <Typography variant="body1">
+                {profile.email || "No email provided"}
+              </Typography>
+            </Box>
+            
+            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+              <PhoneIcon sx={{ mr: 1, color: "info.main", fontSize: 20 }} />
+              <Typography variant="body1">
+                {profile.phone || "No phone provided"}
+              </Typography>
+            </Box>
+            
+            {hasCoordinates && (
+              <Button 
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  setShowMap(true);
+                  setTimeout(scrollToMap, 100);
+                }}
+                sx={{ mt: 2 }}
+              >
+                View on Map
+              </Button>
+            )}
+            
+            {profile.tags && profile.tags.length > 0 && (
+              <Box sx={{ mt: 3 }}>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                  {profile.tags.map((tag, index) => (
+                    <Chip 
+                      key={index}
+                      label={tag}
+                      size="small"
+                      color="primary"
+                      variant="outlined"
+                    />
+                  ))}
+                </Box>
+              </Box>
+            )}
+          </Grid>
+        </Grid>
         
-        <CardContent sx={{ p: 3 }}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
+        {/* Bio section */}
+        {profile.bio && (
+          <>
+            <Divider />
+            <Box sx={{ p: 3 }}>
               <Typography variant="h6" gutterBottom>
-                Personal Information
+                About
+              </Typography>
+              <Typography variant="body1" paragraph>
+                {profile.bio}
+              </Typography>
+            </Box>
+          </>
+        )}
+        
+        {/* Address section with map */}
+        {hasAddress && (
+          <>
+            <Divider />
+            <Box sx={{ p: 3 }} id="map-section">
+              <Typography variant="h6" gutterBottom>
+                Location
               </Typography>
               
-              <Divider sx={{ mb: 2 }} />
-              
-              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                <EmailIcon sx={{ mr: 2, color: "primary.main" }} />
-                <Typography variant="body1">
-                  {profile.email || "No email provided"}
+              {profile.address?.street && (
+                <Typography variant="body1" paragraph>
+                  {profile.address.street}
+                  {profile.address.zipcode && `, ${profile.address.zipcode}`}
+                  <br />
+                  {profile.address.city && profile.address.state && 
+                    `${profile.address.city}, ${profile.address.state}`}
                 </Typography>
-              </Box>
-              
-              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                <PhoneIcon sx={{ mr: 2, color: "primary.main" }} />
-                <Typography variant="body1">
-                  {profile.phone || "No phone provided"}
-                </Typography>
-              </Box>
-              
-              {profile.company && (
-                <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                  <BusinessIcon sx={{ mr: 2, color: "primary.main" }} />
-                  <Typography variant="body1">
-                    {profile.company.name || "No company information"}
-                    {profile.company.title && ` (${profile.company.title})`}
-                  </Typography>
-                </Box>
               )}
               
-              {hasAddress && (
-                <Box sx={{ display: "flex", alignItems: "flex-start", mb: 2 }}>
-                  <LocationOnIcon sx={{ mr: 2, color: "primary.main", mt: 0.5 }} />
-                  <Box>
-                    <Typography variant="body1">
-                      {profile.address.city && profile.address.state ? 
-                        `${profile.address.city}, ${profile.address.state}` : 
-                        "Address details incomplete"}
-                    </Typography>
-                    
-                    {profile.address.street && (
-                      <Typography variant="body2" color="text.secondary">
-                        {profile.address.street}
-                        {profile.address.number && `, ${profile.address.number}`}
-                        {profile.address.zipcode && `, ${profile.address.zipcode}`}
-                      </Typography>
-                    )}
-                    
-                    {(profile.address.coordinates?.lat || profile.address.coordinates?.lng) && (
+              {hasCoordinates && (
+                <>
+                  {!showMap && (
+                    <Button 
+                      variant="outlined" 
+                      size="medium" 
+                      onClick={toggleMap}
+                      sx={{ mt: 1, mb: 2 }}
+                    >
+                      Show Map
+                    </Button>
+                  )}
+                  
+                  {showMap && (
+                    <>
+                      <Box sx={{ height: 400, width: '100%', mb: 2, borderRadius: 1, overflow: 'hidden' }}>
+                        <Map coordinates={profile.address.coordinates} />
+                      </Box>
+                      
                       <Button 
                         variant="outlined" 
-                        size="small" 
+                        size="medium" 
                         onClick={toggleMap}
-                        sx={{ mt: 1 }}
                       >
-                        {showMap ? "Hide Map" : "Show Map"}
+                        Hide Map
                       </Button>
-                    )}
-                  </Box>
-                </Box>
+                    </>
+                  )}
+                </>
               )}
-              
-              {showMap && profile.address && profile.address.coordinates && (
-                <Box sx={{ height: 300, mt: 2, mb: 2 }}>
-                  <Map coordinates={profile.address.coordinates} />
-                </Box>
-              )}
-            </Grid>
-            
-            <Grid item xs={12} md={6}>
-              <Typography variant="h6" gutterBottom>
-                Additional Information
-              </Typography>
-              
-              <Divider sx={{ mb: 2 }} />
-              
-              {profile.bio && (
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant="subtitle1" gutterBottom>
-                    Bio
-                  </Typography>
-                  <Typography variant="body2" paragraph>
-                    {profile.bio}
-                  </Typography>
-                </Box>
-              )}
-              
-              {profile.website && (
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant="subtitle1" gutterBottom>
-                    Website
-                  </Typography>
-                  <Link 
-                    href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                  >
-                    {profile.website}
-                  </Link>
-                </Box>
-              )}
-              
-              {profile.tags && profile.tags.length > 0 && (
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant="subtitle1" gutterBottom>
-                    Tags
-                  </Typography>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                    {profile.tags.map((tag, index) => (
-                      <Chip 
-                        key={index}
-                        label={tag}
-                        size="small"
-                        color="primary"
-                        variant="outlined"
-                      />
-                    ))}
-                  </Box>
-                </Box>
-              )}
-              
-              {profile.friends && profile.friends.length > 0 && (
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant="subtitle1" gutterBottom>
-                    Connections
-                  </Typography>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                    {profile.friends.map((friend, index) => (
-                      <Chip 
-                        key={index}
-                        avatar={<Avatar src={friend.image} />}
-                        label={`${friend.firstName} ${friend.lastName}`}
-                        size="medium"
-                        variant="outlined"
-                        sx={{ mb: 1 }}
-                      />
-                    ))}
-                  </Box>
-                </Box>
-              )}
-            </Grid>
-          </Grid>
-        </CardContent>
+            </Box>
+          </>
+        )}
       </Paper>
     </Box>
   );

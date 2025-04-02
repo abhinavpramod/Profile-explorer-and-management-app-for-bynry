@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -17,14 +17,14 @@ import {
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import LockIcon from "@mui/icons-material/Lock";
-import PersonIcon from "@mui/icons-material/Person";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import EmailIcon from "@mui/icons-material/Email";
 
 function Signup({ isLoggedIn }) {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
+    username: "",
     password: "",
     confirmPassword: ""
   });
@@ -37,10 +37,11 @@ function Signup({ isLoggedIn }) {
     severity: "success"
   });
 
-  if (isLoggedIn) {
-    navigate("/");
-    return null;
-  }
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/");
+    }
+  }, [isLoggedIn, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -52,8 +53,8 @@ function Signup({ isLoggedIn }) {
 
   const validateForm = () => {
     let temp = {};
-    temp.name = formData.name ? "" : "Name is required";
     temp.email = /\S+@\S+\.\S+/.test(formData.email) ? "" : "Email is not valid";
+    temp.username = formData.username ? "" : "Username is required";
     temp.password = formData.password.length >= 6 ? "" : "Password must be at least 6 characters";
     temp.confirmPassword = formData.confirmPassword === formData.password ? "" : "Passwords do not match";
     
@@ -69,28 +70,7 @@ function Signup({ isLoggedIn }) {
       
       setTimeout(() => {
         try {
-          const users = JSON.parse(localStorage.getItem("users") || "[]");
-          
-          if (users.some(user => user.email === formData.email.trim())) {
-            setSnackbar({
-              open: true,
-              message: "Email already registered",
-              severity: "error"
-            });
-            setLoading(false);
-            return;
-          }
-          
-          const newUser = {
-            id: Date.now().toString(),
-            name: formData.name.trim(),
-            email: formData.email.trim(),
-            password: formData.password
-          };
-          
-          users.push(newUser);
-          localStorage.setItem("users", JSON.stringify(users));
-          
+          // For demo, simulate successful registration
           setSnackbar({
             open: true,
             message: "Account created successfully! You can now login.",
@@ -124,8 +104,12 @@ function Signup({ isLoggedIn }) {
     setShowPassword(!showPassword);
   };
 
+  if (isLoggedIn) {
+    return null;
+  }
+
   return (
-    <Box sx={{ display: "flex", justifyContent: "center", mt: 8, px: 2 }}>
+    <Box sx={{ display: "flex", justifyContent: "center", mt: 4, px: 2 }}>
       <Paper elevation={3} sx={{ p: 4, width: "100%", maxWidth: 500 }}>
         <Box sx={{ textAlign: "center", mb: 3 }}>
           <Typography variant="h4" component="h1" gutterBottom>
@@ -138,26 +122,6 @@ function Signup({ isLoggedIn }) {
         
         <form onSubmit={handleSubmit}>
           <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <TextField
-                name="name"
-                label="Full Name"
-                value={formData.name}
-                onChange={handleChange}
-                fullWidth
-                error={!!errors.name}
-                helperText={errors.name}
-                required
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <PersonIcon color="action" />
-                    </InputAdornment>
-                  )
-                }}
-              />
-            </Grid>
-            
             <Grid item xs={12}>
               <TextField
                 type="email"
@@ -173,6 +137,26 @@ function Signup({ isLoggedIn }) {
                   startAdornment: (
                     <InputAdornment position="start">
                       <EmailIcon color="action" />
+                    </InputAdornment>
+                  )
+                }}
+              />
+            </Grid>
+            
+            <Grid item xs={12}>
+              <TextField
+                name="username"
+                label="Username"
+                value={formData.username}
+                onChange={handleChange}
+                fullWidth
+                error={!!errors.username}
+                helperText={errors.username}
+                required
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <AccountCircleIcon color="action" />
                     </InputAdornment>
                   )
                 }}
