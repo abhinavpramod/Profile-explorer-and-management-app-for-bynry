@@ -243,6 +243,213 @@ const sampleProfiles = [
     languages: ["English", "Spanish", "Portuguese"],
     skills: ["Recruitment", "Employee Relations", "Training & Development", "Diversity & Inclusion"],
     hobbies: ["Beach volleyball", "Salsa dancing", "Volunteering for career development workshops"]
+  },
+  {
+    id: 11,
+    firstName: "Carlos",
+    lastName: "Rodriguez",
+    email: "carlos.rodriguez@example.com",
+    phone: "+1 (555) 321-7654",
+    image: "https://randomuser.me/api/portraits/men/6.jpg",
+    company: { name: "Culinary Creations" },
+    address: {
+      street: "808 Cherry Lane",
+      city: "San Antonio",
+      state: "TX",
+      zipcode: "78205",
+      coordinates: { lat: "29.4241", lng: "-98.4936" }
+    },
+    bio: "Professional chef with expertise in international cuisine and sustainable cooking practices. I blend traditional techniques with modern innovations to create memorable dining experiences. My passion lies in sourcing local ingredients and creating dishes that tell a story of culture and place.",
+    tags: ["Culinary Arts", "Sustainable Cooking", "Farm-to-Table"],
+    website: "carlosrodriguez.chef",
+    education: "Culinary Institute of America, New York",
+    languages: ["English", "Spanish", "French"],
+    skills: ["Menu Development", "Food Styling", "Culinary Education", "Sustainable Practices"],
+    hobbies: ["Foraging for local ingredients", "Gardening", "Food photography"]
+  },
+  {
+    id: 12,
+    firstName: "Olivia",
+    lastName: "Chen",
+    email: "olivia.chen@example.com",
+    phone: "+1 (555) 789-0123",
+    image: "https://randomuser.me/api/portraits/women/6.jpg",
+    company: { name: "Global Education Partners" },
+    address: {
+      street: "909 Maple Court",
+      city: "Portland",
+      state: "OR",
+      zipcode: "97201",
+      coordinates: { lat: "45.5051", lng: "-122.6750" }
+    },
+    bio: "Education consultant specializing in international curriculum development and teacher training. I work with schools worldwide to implement innovative teaching methodologies that prepare students for a global future. My approach combines research-backed strategies with practical classroom applications.",
+    tags: ["Education", "Curriculum Development", "Teacher Training"],
+    website: "oliviachen.education",
+    education: "PhD in Education, University of Oregon",
+    languages: ["English", "Mandarin", "Cantonese"],
+    skills: ["Curriculum Design", "Educational Technology", "Cross-cultural Communication", "Workshop Facilitation"],
+    hobbies: ["Visiting international schools", "Learning new languages", "Hiking the Pacific Northwest"]
+  },
+  {
+    id: 13,
+    firstName: "Marcus",
+    lastName: "Jackson",
+    email: "marcus.jackson@example.com",
+    phone: "+1 (555) 654-7890",
+    image: "https://randomuser.me/api/portraits/men/7.jpg",
+    company: { name: "Urban Architecture Group" },
+    address: {
+      street: "101 Walnut Street",
+      city: "Atlanta",
+      state: "GA",
+      zipcode: "30303",
+      coordinates: { lat: "33.7488", lng: "-84.3877" }
+    },
+    bio: "Architect focused on sustainable urban development and community-centered design. I believe in creating spaces that foster connection while respecting environmental constraints. My projects range from affordable housing solutions to public spaces that celebrate local culture and history.",
+    tags: ["Architecture", "Urban Planning", "Sustainable Design"],
+    website: "marcusjackson.architecture",
+    education: "Master's in Architecture, Georgia Tech",
+    languages: ["English", "French"],
+    skills: ["Architectural Design", "3D Modeling", "Sustainable Building Practices", "Community Engagement"],
+    hobbies: ["Urban sketching", "Visiting architectural landmarks", "Community garden volunteering"]
+  },
+  {
+    id: 14,
+    firstName: "Elena",
+    lastName: "Petrov",
+    email: "elena.petrov@example.com",
+    phone: "+1 (555) 123-9876",
+    image: "https://randomuser.me/api/portraits/women/7.jpg",
+    company: { name: "Wellness Integrative" },
+    address: {
+      street: "202 Redwood Terrace",
+      city: "Minneapolis",
+      state: "MN",
+      zipcode: "55401",
+      coordinates: { lat: "44.9778", lng: "-93.2650" }
+    },
+    bio: "Holistic health practitioner specializing in integrative medicine and nutrition. I help clients achieve optimal health through personalized wellness plans that address physical, emotional, and lifestyle factors. My practice combines evidence-based approaches with traditional healing wisdom.",
+    tags: ["Integrative Medicine", "Nutrition", "Wellness"],
+    website: "elenapetrov.health",
+    education: "Doctor of Naturopathic Medicine, Bastyr University",
+    languages: ["English", "Russian", "Ukrainian"],
+    skills: ["Nutritional Analysis", "Health Coaching", "Stress Management", "Herbal Medicine"],
+    hobbies: ["Medicinal herb gardening", "Cross-country skiing", "Fermenting foods"]
+  },
+  {
+    id: 15,
+    firstName: "Jamal",
+    lastName: "Washington",
+    email: "jamal.washington@example.com",
+    phone: "+1 (555) 987-5432",
+    image: "https://randomuser.me/api/portraits/men/8.jpg",
+    company: { name: "Sound Innovation Studios" },
+    address: {
+      street: "303 Magnolia Drive",
+      city: "Nashville",
+      state: "TN",
+      zipcode: "37203",
+      coordinates: { lat: "36.1627", lng: "-86.7816" }
+    },
+    bio: "Music producer and audio engineer with experience across multiple genres. I help artists find their unique sound and bring their creative vision to life. My technical expertise and musical background enable me to bridge the gap between artistic expression and professional production.",
+    tags: ["Music Production", "Audio Engineering", "Sound Design"],
+    website: "jamalwashington.sound",
+    education: "Bachelor's in Music Production, Berklee College of Music",
+    languages: ["English", "Arabic"],
+    skills: ["Studio Production", "Live Sound Engineering", "Mixing & Mastering", "Instrumental Arrangement"],
+    hobbies: ["Jazz improvisation", "Vinyl collecting", "Building audio equipment"]
+  },
+  {
+    id: 16,
+    firstName: "Sophia",
+    lastName: "Nguyen",
+    email: "sophia.nguyen@example.com",
+    phone: "+1 (555) 456-3210",
+    image: "https://randomuser.me/api/portraits/women/8.jpg",
+    company: { name: "BioTech Innovations" },
+    address: {
+      street: "404 Aspen Court",
+      city: "Boston",
+      state: "MA",
+      zipcode: "02110",
+      coordinates: { lat: "42.3601", lng: "-71.0589" }
+    },
+    bio: "Biomedical researcher specializing in regenerative medicine and tissue engineering. My work focuses on developing new therapies for degenerative diseases using stem cell technology. I'm passionate about translating laboratory discoveries into clinical applications that improve patient outcomes.",
+    tags: ["Biotechnology", "Regenerative Medicine", "Research"],
+    website: "sophianguyen.science",
+    education: "PhD in Biomedical Engineering, MIT",
+    languages: ["English", "Vietnamese", "Chinese"],
+    skills: ["Stem Cell Culture", "Tissue Engineering", "Molecular Biology", "Clinical Trial Design"],
+    hobbies: ["Science communication outreach", "Kayaking", "Classical piano"]
+  },
+  {
+    id: 17,
+    firstName: "Diego",
+    lastName: "Herrera",
+    email: "diego.herrera@example.com",
+    phone: "+1 (555) 789-4561",
+    image: "https://randomuser.me/api/portraits/men/9.jpg",
+    company: { name: "Green Earth Sustainability" },
+    address: {
+      street: "505 Cedar Street",
+      city: "Sacramento",
+      state: "CA",
+      zipcode: "95814",
+      coordinates: { lat: "38.5816", lng: "-121.4944" }
+    },
+    bio: "Environmental scientist focusing on climate adaptation strategies and water conservation. I work with governments and organizations to develop sustainable policies that balance environmental protection with community needs. My field research informs practical solutions to pressing ecological challenges.",
+    tags: ["Environmental Science", "Climate Adaptation", "Water Conservation"],
+    website: "diegoherrera.environment",
+    education: "Master's in Environmental Management, UC Davis",
+    languages: ["English", "Spanish", "Portuguese"],
+    skills: ["Environmental Impact Assessment", "GIS Mapping", "Policy Development", "Stakeholder Engagement"],
+    hobbies: ["Wildlife photography", "Kayaking", "Native plant restoration"]
+  },
+  {
+    id: 18,
+    firstName: "Aisha",
+    lastName: "Khan",
+    email: "aisha.khan@example.com",
+    phone: "+1 (555) 234-5678",
+    image: "https://randomuser.me/api/portraits/women/9.jpg",
+    company: { name: "Global Development Initiative" },
+    address: {
+      street: "606 Palm Avenue",
+      city: "Washington",
+      state: "DC",
+      zipcode: "20001",
+      coordinates: { lat: "38.9072", lng: "-77.0369" }
+    },
+    bio: "International development specialist with experience in humanitarian aid and education programs. I design and implement initiatives that empower communities in developing regions. My work focuses on creating sustainable solutions through local partnerships and capacity building.",
+    tags: ["International Development", "Education", "Humanitarian Aid"],
+    website: "aishakhan.development",
+    education: "Master's in International Development, Georgetown University",
+    languages: ["English", "Urdu", "Hindi", "French"],
+    skills: ["Program Management", "Grant Writing", "Monitoring & Evaluation", "Cross-Cultural Leadership"],
+    hobbies: ["Travel documentary making", "Cultural anthropology", "International cuisine"]
+  },
+  {
+    id: 19,
+    firstName: "Liam",
+    lastName: "O'Connor",
+    email: "liam.oconnor@example.com",
+    phone: "+1 (555) 321-0987",
+    image: "https://randomuser.me/api/portraits/men/10.jpg",
+    company: { name: "Quantum Computing Labs" },
+    address: {
+      street: "707 Sycamore Lane",
+      city: "Boulder",
+      state: "CO",
+      zipcode: "80302",
+      coordinates: { lat: "40.0150", lng: "-105.2705" }
+    },
+    bio: "Quantum physicist working on the development of quantum computing applications. My research explores the intersection of quantum mechanics and information theory to solve complex computational problems. I'm passionate about making quantum concepts accessible to broader audiences.",
+    tags: ["Quantum Physics", "Computing Research", "Algorithm Design"],
+    website: "liamoconnor.quantum",
+    education: "PhD in Quantum Physics, University of Colorado",
+    languages: ["English", "Irish", "German"],
+    skills: ["Quantum Algorithm Development", "Mathematical Modeling", "Scientific Computing", "Academic Publishing"],
+    hobbies: ["Mountain climbing", "Science fiction writing", "Building quantum computing models"]
   }
 ];
 
@@ -250,15 +457,20 @@ function App() {
   const [profiles, setProfiles] = useState([]);
   const [loadingProfiles, setLoadingProfiles] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
   const [showWorldMap, setShowWorldMap] = useState(false);
   const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     const checkAuth = () => {
-      const user = localStorage.getItem("currentUser");
-      if (user) {
+      const userJson = localStorage.getItem("currentUser");
+      if (userJson) {
+        const user = JSON.parse(userJson);
+        console.log("App.js - Current user:", user);
         setIsLoggedIn(true);
+        setIsAdmin(user.isAdmin === true);
+        console.log("App.js - Is admin:", user.isAdmin === true);
       }
     };
     
@@ -272,6 +484,10 @@ function App() {
 
   const loadProfiles = () => {
     setLoadingProfiles(true);
+    
+    // Remove the force reset so user data persists unless button is clicked
+    // localStorage.removeItem("profiles");
+    
     const savedProfiles = localStorage.getItem("profiles");
     
     if (savedProfiles) {
@@ -287,10 +503,10 @@ function App() {
   };
 
   const resetToDefaultProfiles = () => {
-    if (window.confirm("Are you sure you want to reset to demo profiles? This will delete all custom profiles.")) {
-      localStorage.setItem("profiles", JSON.stringify(sampleProfiles));
-      setProfiles(sampleProfiles);
-    }
+    // Always reset to default profiles without confirmation
+    localStorage.setItem("profiles", JSON.stringify(sampleProfiles));
+    setProfiles(sampleProfiles);
+    alert("All 19 demo profiles have been loaded!");
   };
 
   const toggleTheme = () => {
@@ -300,6 +516,7 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem("currentUser");
     setIsLoggedIn(false);
+    setIsAdmin(false);
   };
 
   const handleToggleWorldMap = () => {
@@ -328,6 +545,8 @@ function App() {
           setText={setSearchText}
           isLogin={isLoggedIn}
           setIsLogin={setIsLoggedIn}
+          isAdmin={isAdmin}
+          setIsAdmin={setIsAdmin}
         />
         
         <Box 
@@ -382,7 +601,7 @@ function App() {
             <Route 
               path="/admin" 
               element={
-                isLoggedIn ? (
+                isLoggedIn && isAdmin ? (
                   <AdminPanel 
                     profiles={profiles} 
                     setProfiles={(newProfiles) => {
@@ -392,7 +611,7 @@ function App() {
                     resetToDefaultProfiles={resetToDefaultProfiles}
                   />
                 ) : (
-                  <Navigate to="/login" />
+                  <Navigate to="/" replace />
                 )
               } 
             />
