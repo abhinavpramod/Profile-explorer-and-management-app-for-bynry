@@ -12,7 +12,9 @@ import {
   Snackbar,
   CircularProgress,
   InputAdornment,
-  IconButton
+  IconButton,
+  FormControlLabel,
+  Checkbox
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
@@ -26,7 +28,8 @@ function Signup({ isLoggedIn }) {
     email: "",
     username: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
+    isAdmin: false // Default to regular user (non-admin)
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -44,10 +47,11 @@ function Signup({ isLoggedIn }) {
   }, [isLoggedIn, navigate]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
+    
     setFormData({
       ...formData,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value
     });
   };
 
@@ -70,10 +74,26 @@ function Signup({ isLoggedIn }) {
       
       setTimeout(() => {
         try {
-          // For demo, simulate successful registration
+          // Store user data in localStorage with isAdmin flag
+          const newUser = {
+            email: formData.email,
+            username: formData.username,
+            isAdmin: formData.isAdmin
+          };
+          
+          console.log("Creating new user:", newUser);
+          
+          // Store in users array or create if it doesn't exist
+          const existingUsers = JSON.parse(localStorage.getItem("users") || "[]");
+          existingUsers.push(newUser);
+          localStorage.setItem("users", JSON.stringify(existingUsers));
+          
+          console.log("Updated users list:", existingUsers);
+          
+          // Show success message
           setSnackbar({
             open: true,
-            message: "Account created successfully! You can now login.",
+            message: `Account created successfully! You can now login.${formData.isAdmin ? ' Admin access granted.' : ''}`,
             severity: "success"
           });
           
@@ -81,6 +101,7 @@ function Signup({ isLoggedIn }) {
             navigate("/login");
           }, 2000);
         } catch (error) {
+          console.error("Error during signup:", error);
           setSnackbar({
             open: true,
             message: `Error: ${error.message}`,
@@ -209,6 +230,21 @@ function Signup({ isLoggedIn }) {
                     </InputAdornment>
                   )
                 }}
+              />
+            </Grid>
+            
+            {/* Admin checkbox - Only for development purposes */}
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={formData.isAdmin}
+                    onChange={handleChange}
+                    name="isAdmin"
+                    color="primary"
+                  />
+                }
+                label="Admin user (for testing purposes)"
               />
             </Grid>
             

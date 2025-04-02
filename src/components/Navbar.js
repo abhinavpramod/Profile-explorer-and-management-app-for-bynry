@@ -56,9 +56,31 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function SearchAppBar({ text, setText, isLogin, setIsLogin }) {
+export default function SearchAppBar({ text, setText, isLogin, setIsLogin, isAdmin, setIsAdmin }) {
   const navigate = useNavigate();
-    
+  
+  console.log("Navbar - isAdmin:", isAdmin);
+  console.log("Navbar - isLogin:", isLogin);
+  
+  // Add fallback check for admin status in case props aren't passed correctly
+  React.useEffect(() => {
+    if (!isAdmin && isLogin) {
+      try {
+        const userJson = localStorage.getItem("currentUser");
+        if (userJson) {
+          const user = JSON.parse(userJson);
+          console.log("Navbar - Checking localStorage for admin status:", user);
+          if (user.isAdmin) {
+            console.log("Navbar - Found admin user in localStorage, updating state");
+            setIsAdmin(true);
+          }
+        }
+      } catch (error) {
+        console.error("Error checking admin status in Navbar:", error);
+      }
+    }
+  }, [isLogin, isAdmin, setIsAdmin]);
+  
   const handleInputChange = (e) => {
     setText(e.target.value);
   };
@@ -67,6 +89,7 @@ export default function SearchAppBar({ text, setText, isLogin, setIsLogin }) {
     // Remove the user from localStorage
     localStorage.removeItem("currentUser");
     setIsLogin(false);
+    setIsAdmin(false); // Reset admin status
     navigate("/");
   };
 
@@ -105,7 +128,9 @@ export default function SearchAppBar({ text, setText, isLogin, setIsLogin }) {
             
             {isLogin ? (
               <>
-                <div className='btn' onClick={handleAdminClick}>Admin</div>
+                {isAdmin && (
+                  <div className='btn' onClick={handleAdminClick}>Admin</div>
+                )}
                 <div className='btn' onClick={handleLogout}>Logout</div>
               </>
             ) : (

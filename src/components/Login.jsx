@@ -64,16 +64,59 @@ function Login({ isLoggedIn, setIsLoggedIn }) {
       setLoading(true);
       
       setTimeout(() => {
-        // For demo purposes, allow any login
-        const demoUser = {
-          id: "demo123",
-          name: "Demo User",
-          username: formData.username.trim()
-        };
-        
-        localStorage.setItem("currentUser", JSON.stringify(demoUser));
-        setIsLoggedIn(true);
-        navigate("/");
+        try {
+          // Get users from localStorage
+          const users = JSON.parse(localStorage.getItem("users") || "[]");
+          console.log("Available users:", users);
+          
+          const user = users.find(u => u.username === formData.username.trim());
+          console.log("Found user:", user);
+          
+          if (user) {
+            // In a real app, you would verify the password here
+            // For demo purposes, we'll just log the user in
+            const currentUser = {
+              id: user.id || "user-" + Date.now(),
+              username: user.username,
+              email: user.email,
+              isAdmin: user.isAdmin || false // Make sure isAdmin is set
+            };
+            
+            console.log("Storing current user:", currentUser);
+            localStorage.setItem("currentUser", JSON.stringify(currentUser));
+            
+            // Show a message if admin
+            if (currentUser.isAdmin) {
+              setSnackbar({
+                open: true,
+                message: "Logged in with admin privileges!",
+                severity: "success"
+              });
+            }
+            
+            setIsLoggedIn(true);
+            navigate("/");
+          } else {
+            // For demo purposes, create and login a non-admin user if not found
+            const demoUser = {
+              id: "demo-" + Date.now(),
+              username: formData.username.trim(),
+              isAdmin: false // Demo users are not admins
+            };
+            
+            console.log("Creating demo user:", demoUser);
+            localStorage.setItem("currentUser", JSON.stringify(demoUser));
+            setIsLoggedIn(true);
+            navigate("/");
+          }
+        } catch (error) {
+          console.error("Login error:", error);
+          setSnackbar({
+            open: true,
+            message: "Login failed. Please try again.",
+            severity: "error"
+          });
+        }
         
         setLoading(false);
       }, 1000);
