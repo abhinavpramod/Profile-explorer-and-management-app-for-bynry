@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { v4 as uuidv4 } from 'uuid';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -29,9 +29,13 @@ const sampleProfiles = [
       zipcode: "94105",
       coordinates: { lat: "37.7749", lng: "-122.4194" }
     },
-    bio: "Software developer with 5 years of experience in web technologies.",
+    bio: "Software developer with 5 years of experience in web technologies. Passionate about creating intuitive and responsive user interfaces using modern JavaScript frameworks. Advocating for clean code principles and test-driven development.",
     tags: ["JavaScript", "React", "Node.js"],
-    isFollowing: false
+    website: "johndoe.dev",
+    education: "Master's in Computer Science, Stanford University",
+    languages: ["English", "Spanish"],
+    skills: ["Full-stack Development", "UI/UX Design", "DevOps"],
+    hobbies: ["Photography", "Hiking", "Playing guitar"]
   },
   {
     id: 2,
@@ -48,9 +52,13 @@ const sampleProfiles = [
       zipcode: "10022",
       coordinates: { lat: "40.7128", lng: "-74.0060" }
     },
-    bio: "UI/UX designer passionate about creating beautiful and functional interfaces.",
+    bio: "UI/UX designer passionate about creating beautiful and functional interfaces. With a background in psychology, I focus on user-centered design principles to craft experiences that are both intuitive and delightful. I've worked with startups and large corporations to reimagine their digital products.",
     tags: ["UI/UX", "Figma", "Adobe XD"],
-    isFollowing: true
+    website: "janesmith.design",
+    education: "Bachelor's in Graphic Design, RISD",
+    languages: ["English", "French"],
+    skills: ["User Research", "Visual Design", "Prototyping", "Design Systems"],
+    hobbies: ["Painting", "Urban Sketching", "Yoga"]
   },
   {
     id: 3,
@@ -67,9 +75,13 @@ const sampleProfiles = [
       zipcode: "60601",
       coordinates: { lat: "41.8781", lng: "-87.6298" }
     },
-    bio: "Data scientist specializing in machine learning and predictive analytics.",
+    bio: "Data scientist specializing in machine learning and predictive analytics. I help companies make sense of their data and extract actionable insights that drive business decisions. My expertise includes statistical analysis, data visualization, and developing machine learning models.",
     tags: ["Python", "Machine Learning", "Data Science"],
-    isFollowing: false
+    website: "robertjohnson.ai",
+    education: "PhD in Statistics, University of Chicago",
+    languages: ["English", "German"],
+    skills: ["Statistical Analysis", "Natural Language Processing", "Big Data Technologies", "Neural Networks"],
+    hobbies: ["Chess", "Playing piano", "Astronomy"]
   },
   {
     id: 4,
@@ -86,9 +98,13 @@ const sampleProfiles = [
       zipcode: "98101",
       coordinates: { lat: "47.6062", lng: "-122.3321" }
     },
-    bio: "Digital marketing specialist with expertise in SEO and content strategy.",
+    bio: "Digital marketing specialist with expertise in SEO and content strategy. I help brands find their voice and connect with their audience through compelling storytelling and data-driven marketing campaigns. My approach combines creativity with analytics to maximize ROI.",
     tags: ["SEO", "Content Marketing", "Social Media"],
-    isFollowing: true
+    website: "emilywilson.marketing",
+    education: "Bachelor's in Marketing, University of Washington",
+    languages: ["English", "Mandarin"],
+    skills: ["Campaign Management", "Analytics", "Social Media Strategy", "Email Marketing"],
+    hobbies: ["Travel photography", "Cooking", "Mountain biking"]
   },
   {
     id: 5,
@@ -105,9 +121,13 @@ const sampleProfiles = [
       zipcode: "02108",
       coordinates: { lat: "42.3601", lng: "-71.0589" }
     },
-    bio: "Financial analyst with a background in investment banking and portfolio management.",
+    bio: "Financial analyst with a background in investment banking and portfolio management. I provide strategic financial advice to help individuals and organizations achieve their financial goals. My specialty is in risk assessment and developing sustainable investment strategies.",
     tags: ["Finance", "Investment", "Analysis"],
-    isFollowing: false
+    website: "michaelbrown.finance",
+    education: "MBA in Finance, Harvard Business School",
+    languages: ["English", "Japanese"],
+    skills: ["Financial Modeling", "Portfolio Management", "Risk Assessment", "Market Analysis"],
+    hobbies: ["Golf", "Wine tasting", "Reading economic literature"]
   },
   {
     id: 6,
@@ -124,9 +144,13 @@ const sampleProfiles = [
       zipcode: "80202",
       coordinates: { lat: "39.7392", lng: "-104.9903" }
     },
-    bio: "Healthcare consultant focusing on improving patient care and operational efficiency.",
+    bio: "Healthcare consultant focusing on improving patient care and operational efficiency. With over a decade of experience in healthcare administration, I've helped numerous hospitals and clinics implement best practices and innovative solutions that enhance patient outcomes while reducing costs.",
     tags: ["Healthcare", "Consulting", "Patient Care"],
-    isFollowing: false
+    website: "sarahdavis.health",
+    education: "Master's in Healthcare Administration, Johns Hopkins University",
+    languages: ["English", "Italian"],
+    skills: ["Healthcare Management", "Process Optimization", "Patient Experience Design", "Regulatory Compliance"],
+    hobbies: ["Hiking in the Rockies", "Volunteering at local clinics", "Gardening"]
   },
   {
     id: 7,
@@ -143,9 +167,13 @@ const sampleProfiles = [
       zipcode: "78701",
       coordinates: { lat: "30.2672", lng: "-97.7431" }
     },
-    bio: "Mechanical engineer specializing in sustainable energy systems and green technology.",
+    bio: "Mechanical engineer specializing in sustainable energy systems and green technology. My work focuses on designing energy-efficient mechanical systems that reduce environmental impact while maintaining high performance. I've worked on projects ranging from residential buildings to large-scale industrial facilities.",
     tags: ["Mechanical Engineering", "Sustainable Energy", "Green Tech"],
-    isFollowing: true
+    website: "davidmiller.engineering",
+    education: "PhD in Mechanical Engineering, MIT",
+    languages: ["English", "Portuguese"],
+    skills: ["Renewable Energy Systems", "Thermodynamics", "CAD Design", "Project Management"],
+    hobbies: ["Building small robots", "Woodworking", "Environmental activism"]
   },
   {
     id: 8,
@@ -162,9 +190,13 @@ const sampleProfiles = [
       zipcode: "90001",
       coordinates: { lat: "34.0522", lng: "-118.2437" }
     },
-    bio: "Content creator and storyteller with experience in video production and social media.",
+    bio: "Content creator and storyteller with experience in video production and social media. I help brands tell their stories through compelling multimedia content that resonates with their target audience. My background in film and journalism gives me a unique perspective on digital storytelling.",
     tags: ["Content Creation", "Video Production", "Social Media"],
-    isFollowing: false
+    website: "lisataylor.media",
+    education: "Bachelor's in Film Production, USC",
+    languages: ["English", "Korean"],
+    skills: ["Videography", "Editing", "Storytelling", "Brand Narrative Development"],
+    hobbies: ["Documentary filmmaking", "Surfing", "Visiting art galleries"]
   },
   {
     id: 9,
@@ -181,9 +213,13 @@ const sampleProfiles = [
       zipcode: "19102",
       coordinates: { lat: "39.9526", lng: "-75.1652" }
     },
-    bio: "Cybersecurity expert with a focus on network security and threat prevention.",
+    bio: "Cybersecurity expert with a focus on network security and threat prevention. I help organizations protect their sensitive data and systems from evolving cyber threats. My approach combines proactive security measures with rapid incident response capabilities to ensure robust protection.",
     tags: ["Cybersecurity", "Network Security", "Threat Analysis"],
-    isFollowing: true
+    website: "jasonthomas.security",
+    education: "Master's in Computer Security, Carnegie Mellon University",
+    languages: ["English", "Russian"],
+    skills: ["Penetration Testing", "Security Architecture", "Incident Response", "Security Auditing"],
+    hobbies: ["Participating in CTF competitions", "Lock picking", "Rock climbing"]
   },
   {
     id: 10,
@@ -200,9 +236,13 @@ const sampleProfiles = [
       zipcode: "33101",
       coordinates: { lat: "25.7617", lng: "-80.1918" }
     },
-    bio: "Human resources professional specializing in talent acquisition and employee development.",
+    bio: "Human resources professional specializing in talent acquisition and employee development. I'm passionate about creating inclusive workplaces where employees can thrive. My expertise includes implementing effective recruitment strategies, designing employee development programs, and fostering positive company cultures.",
     tags: ["HR", "Talent Acquisition", "Employee Development"],
-    isFollowing: false
+    website: "amandamartin.hr",
+    education: "Bachelor's in Human Resources Management, University of Florida",
+    languages: ["English", "Spanish", "Portuguese"],
+    skills: ["Recruitment", "Employee Relations", "Training & Development", "Diversity & Inclusion"],
+    hobbies: ["Beach volleyball", "Salsa dancing", "Volunteering for career development workshops"]
   }
 ];
 
@@ -212,6 +252,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
   const [showWorldMap, setShowWorldMap] = useState(false);
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     const checkAuth = () => {
@@ -261,17 +302,6 @@ function App() {
     setIsLoggedIn(false);
   };
 
-  const handleToggleFollowStatus = (profileId, isFollowing) => {
-    const updatedProfiles = profiles.map(profile => 
-      profile.id.toString() === profileId.toString() 
-        ? { ...profile, isFollowing } 
-        : profile
-    );
-    
-    setProfiles(updatedProfiles);
-    localStorage.setItem("profiles", JSON.stringify(updatedProfiles));
-  };
-  
   const handleToggleWorldMap = () => {
     setShowWorldMap(!showWorldMap);
   };
@@ -292,97 +322,89 @@ function App() {
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
-      <Router>
-        <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-          <Navbar 
-            isLoggedIn={isLoggedIn} 
-            onLogout={handleLogout} 
-            theme={theme} 
-            onToggleTheme={toggleTheme} 
-          />
-          
-          <Box 
-            component="main" 
-            sx={{ 
-              flexGrow: 1, 
-              px: { xs: 2, sm: 4 }, 
-              pt: { xs: 2, sm: 3 },
-              pb: 4,
-              mt: 8
-            }}
-          >
-            <Box sx={{ 
-              display: "flex", 
-              justifyContent: "space-between", 
-              alignItems: "center",
-              mb: 3,
-              flexWrap: "wrap",
-              gap: 2
-            }}>
-              {isLoggedIn && (
-                <>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={resetToDefaultProfiles}
-                  >
-                    Reset to Demo Profiles
-                  </Button>
-                  
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    startIcon={<PublicIcon />}
-                    onClick={handleToggleWorldMap}
-                  >
-                    View World Map
-                  </Button>
-                </>
-              )}
-            </Box>
-            
-            <Routes>
-              <Route 
-                path="/" 
-                element={
-                  <CardWrapper 
-                    profiles={profiles} 
-                    onToggleFollowStatus={handleToggleFollowStatus}
-                    loadingProfiles={loadingProfiles}
-                  />
-                } 
-              />
-              <Route 
-                path="/profile/:id" 
-                element={<Detail profiles={profiles} />} 
-              />
-              <Route 
-                path="/admin" 
-                element={
-                  isLoggedIn ? (
-                    <AdminPanel 
-                      profiles={profiles} 
-                      setProfiles={(newProfiles) => {
-                        setProfiles(newProfiles);
-                        localStorage.setItem("profiles", JSON.stringify(newProfiles));
-                      }} 
-                      resetToDefaultProfiles={resetToDefaultProfiles}
-                    />
-                  ) : (
-                    <Navigate to="/login" />
-                  )
-                } 
-              />
-              <Route 
-                path="/login" 
-                element={<Login isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />} 
-              />
-              <Route 
-                path="/signup" 
-                element={<Signup isLoggedIn={isLoggedIn} />} 
-              />
-            </Routes>
+      <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+        <Navbar 
+          text={searchText}
+          setText={setSearchText}
+          isLogin={isLoggedIn}
+          setIsLogin={setIsLoggedIn}
+        />
+        
+        <Box 
+          component="main" 
+          sx={{ 
+            flexGrow: 1, 
+            px: { xs: 2, sm: 4 }, 
+            pt: { xs: 2, sm: 3 },
+            pb: 4,
+            mt: 8
+          }}
+        >
+          <Box sx={{ 
+            display: "flex", 
+            justifyContent: "flex-end", 
+            alignItems: "center",
+            mb: 3,
+            flexWrap: "wrap",
+            gap: 2
+          }}>
+            {isLoggedIn && (
+              <Button
+                variant="outlined"
+                color="primary"
+                startIcon={<PublicIcon />}
+                onClick={handleToggleWorldMap}
+              >
+                View World Map
+              </Button>
+            )}
           </Box>
+          
+          <Routes>
+            <Route 
+              path="/" 
+              element={
+                <CardWrapper 
+                  profiles={profiles.filter(profile => 
+                    searchText === "" || 
+                    `${profile.firstName} ${profile.lastName}`.toLowerCase().includes(searchText.toLowerCase()) ||
+                    profile.email?.toLowerCase().includes(searchText.toLowerCase()) ||
+                    profile.company?.name?.toLowerCase().includes(searchText.toLowerCase())
+                  )} 
+                  loadingProfiles={loadingProfiles}
+                />
+              } 
+            />
+            <Route 
+              path="/profile/:id" 
+              element={<Detail profiles={profiles} />} 
+            />
+            <Route 
+              path="/admin" 
+              element={
+                isLoggedIn ? (
+                  <AdminPanel 
+                    profiles={profiles} 
+                    setProfiles={(newProfiles) => {
+                      setProfiles(newProfiles);
+                      localStorage.setItem("profiles", JSON.stringify(newProfiles));
+                    }} 
+                    resetToDefaultProfiles={resetToDefaultProfiles}
+                  />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              } 
+            />
+            <Route 
+              path="/login" 
+              element={<Login isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />} 
+            />
+            <Route 
+              path="/signup" 
+              element={<Signup isLoggedIn={isLoggedIn} />} 
+            />
+          </Routes>
         </Box>
         
         <Dialog 
@@ -399,7 +421,7 @@ function App() {
         >
           <WorldMap profiles={profiles} onClose={handleToggleWorldMap} />
         </Dialog>
-      </Router>
+      </Box>
     </ThemeProvider>
   );
 }
