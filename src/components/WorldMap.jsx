@@ -39,10 +39,8 @@ function WorldMap({ profiles, onClose }) {
   const [geoDetails, setGeoDetails] = useState(null);
   const [isZoomedIn, setIsZoomedIn] = useState(false);
   
-  // Initialize map with all markers
   useEffect(() => {
     if (selectedProfile && isZoomedIn) {
-      // If we have a selected profile and are zoomed in, just return
       return;
     }
     
@@ -50,7 +48,6 @@ function WorldMap({ profiles, onClose }) {
     setError(false);
     
     try {
-      // Filter profiles that have valid coordinates
       const validProfiles = profiles.filter(profile => {
         const lat = profile.address?.coordinates?.lat;
         const lng = profile.address?.coordinates?.lng;
@@ -63,31 +60,23 @@ function WorldMap({ profiles, onClose }) {
         return;
       }
       
-      // Create Google Maps iframe with all markers
       const iframe = mapRef.current;
       
-      // Create base URL for map
       let mapUrl = "https://maps.google.com/maps?";
       
-      // Set zoom level for world view
       mapUrl += "z=1";
       
-      // Add all profile markers to the map
       validProfiles.forEach((profile, index) => {
         const lat = parseFloat(profile.address.coordinates.lat);
         const lng = parseFloat(profile.address.coordinates.lng);
         
-        // Add marker for each profile with label (index number)
         mapUrl += `&markers=color:red%7Clabel:${index + 1}%7C${lat},${lng}`;
       });
       
-      // Append output format for embedding
       mapUrl += "&output=embed";
       
-      // Set iframe source
       iframe.src = mapUrl;
       
-      // Handle loading events
       iframe.onload = () => {
         setLoading(false);
       };
@@ -97,7 +86,7 @@ function WorldMap({ profiles, onClose }) {
         setLoading(false);
       };
     } catch (error) {
-      console.error("Map loading error:", error);
+      console.error("Error initializing map:", error);
       setError("Error initializing map");
       setLoading(false);
     }
@@ -110,10 +99,9 @@ function WorldMap({ profiles, onClose }) {
     };
   }, [profiles, selectedProfile, isZoomedIn]);
   
-  // Handle profile selection - zoom in to their location
   const handleProfileSelect = (profile) => {
     setSelectedProfile(profile);
-    setGeoDetails(null); // Reset geo details
+    setGeoDetails(null);
     setLoading(true);
     setIsZoomedIn(true);
     
@@ -126,17 +114,13 @@ function WorldMap({ profiles, onClose }) {
         return;
       }
       
-      // Immediately fetch geographical details without waiting for map
       fetchGeoDetails(lat, lng, profile);
       
-      // Create URL for specific location with higher zoom level (15)
       const mapUrl = `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
       
-      // Set iframe source to zoomed location
       if (mapRef.current) {
         mapRef.current.src = mapUrl;
         
-        // Handle loading events
         mapRef.current.onload = () => {
           setLoading(false);
         };
@@ -151,22 +135,18 @@ function WorldMap({ profiles, onClose }) {
     }
   };
   
-  // Go back to world view
   const handleBackToWorldView = () => {
     setSelectedProfile(null);
     setGeoDetails(null);
     setIsZoomedIn(false);
   };
   
-  // Fetch geographical details for a location
   const fetchGeoDetails = async (lat, lng, profile = selectedProfile) => {
     try {
-      // Get the address from the profile
       const city = profile.address?.city || "Unknown City";
       const state = profile.address?.state || "Unknown State";
       const country = getCountryFromCoordinates(lat, lng);
       
-      // Create geographical details immediately (no artificial delay)
       const details = {
         formattedAddress: `${city}, ${state}, ${country}`,
         coordinates: { lat, lng },
@@ -184,10 +164,7 @@ function WorldMap({ profiles, onClose }) {
     }
   };
   
-  // Helper functions for simulated geographical data
   const getCountryFromCoordinates = (lat, lng) => {
-    // Simple logic to determine country based on location
-    // This is just an example and not accurate
     if (lat > 0 && lng > -140 && lng < -30) return "United States";
     if (lat > 35 && lng > 105) return "China";
     if (lat > 35 && lng < 15 && lng > -15) return "Europe";
@@ -205,7 +182,6 @@ function WorldMap({ profiles, onClose }) {
   };
   
   const getTimeZoneFromCoordinates = (lat, lng) => {
-    // Simple logic to determine time zone based on longitude
     if (lng < -100) return "Pacific Time Zone (UTC-8)";
     if (lng < -70) return "Eastern Time Zone (UTC-5)";
     if (lng < 0) return "Greenwich Mean Time (UTC)";
@@ -215,7 +191,6 @@ function WorldMap({ profiles, onClose }) {
   };
   
   const getClimateFromCoordinates = (lat) => {
-    // Simple logic based on latitude
     const absLat = Math.abs(lat);
     if (absLat < 15) return "Tropical";
     if (absLat < 30) return "Subtropical";
@@ -224,7 +199,6 @@ function WorldMap({ profiles, onClose }) {
   };
   
   const generateNearbyLandmarks = (city) => {
-    // Create fake landmarks based on city name
     const landmarks = {
       "San Francisco": ["Golden Gate Bridge", "Fisherman's Wharf", "Alcatraz Island"],
       "New York": ["Empire State Building", "Central Park", "Statue of Liberty"],
@@ -280,19 +254,16 @@ function WorldMap({ profiles, onClose }) {
         </IconButton>
       </Box>
       
-      {/* Dynamic layout that changes based on zoom state */}
       <Box sx={{ 
         flex: 1, 
         display: 'flex',
         flexDirection: 'column'
       }}>
-        {/* Main content area */}
         <Box sx={{ 
           flex: 1, 
           display: 'flex',
           flexDirection: isZoomedIn ? 'column' : { xs: 'column', md: 'row' }
         }}>
-          {/* Map view */}
           <Box sx={{ 
             flex: isZoomedIn ? 'none' : 2, 
             height: isZoomedIn ? { xs: '300px', md: '400px' } : { xs: '300px', md: '600px' },
@@ -334,7 +305,6 @@ function WorldMap({ profiles, onClose }) {
             )}
           </Box>
           
-          {/* Show profiles list only in world view */}
           {!isZoomedIn && (
             <Box sx={{ 
               flex: 1, 
@@ -352,7 +322,6 @@ function WorldMap({ profiles, onClose }) {
                 <Divider />
                 
                 {profiles.map((profile, index) => {
-                  // Check if profile has valid coordinates
                   const hasValidCoords = profile.address?.coordinates?.lat && 
                                         profile.address?.coordinates?.lng &&
                                         !isNaN(parseFloat(profile.address.coordinates.lat)) &&
@@ -404,7 +373,6 @@ function WorldMap({ profiles, onClose }) {
           )}
         </Box>
         
-        {/* Show geographic details when zoomed in */}
         {isZoomedIn && selectedProfile && (
           <Box sx={{ 
             p: 2,
@@ -412,7 +380,6 @@ function WorldMap({ profiles, onClose }) {
             overflowY: 'auto'
           }}>
             <Grid container spacing={3}>
-              {/* Profile info */}
               <Grid item xs={12} md={4}>
                 <Card variant="outlined">
                   <CardContent>
@@ -461,7 +428,6 @@ function WorldMap({ profiles, onClose }) {
                 </Card>
               </Grid>
               
-              {/* Geographical details */}
               <Grid item xs={12} md={8}>
                 <Card variant="outlined">
                   <CardContent>

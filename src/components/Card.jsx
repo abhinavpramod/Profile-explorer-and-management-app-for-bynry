@@ -1,332 +1,170 @@
-import React, { useState } from 'react';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import Typography from '@mui/material/Typography';
-import { Button, CardActionArea, CardActions, Chip, Divider, CircularProgress, Avatar, Box } from '@mui/material';
-import GoogleMap from './Map';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Card as MuiCard,
+  CardContent,
+  Typography,
+  CardMedia,
+  Box,
+  Avatar,
+  Chip,
+  Skeleton,
+  CardActionArea,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import EmailIcon from "@mui/icons-material/Email";
+import PhoneIcon from "@mui/icons-material/Phone";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 import "./Card.css";
-import ActionAreaCard from './Detail';
 
-export default function CardComponent({ data, viewMode = 'grid' }) {
-    const [mapVisibility, setMapVisibility] = useState({});
-    const [detailVisibility, setDetailVisibility] = useState({});
-    const [loading, setLoading] = useState(false);
+function Card({ profile, viewMode = "grid", onToggleFollowStatus }) {
+  const navigate = useNavigate();
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const defaultImage = "https://via.placeholder.com/150?text=Profile";
 
-    // Toggle map visibility for a specific profile
-    const toggleMap = (id) => {
-        setMapVisibility(prev => ({
-            ...prev,
-            [id]: !prev[id]
-        }));
-    };
+  useEffect(() => {
+    setIsFollowing(profile.isFollowing || false);
+  }, [profile]);
 
-    // Toggle detail view for a specific profile
-    const toggleDetail = (id) => {
-        setDetailVisibility(prev => ({
-            ...prev,
-            [id]: !prev[id]
-        }));
-    };
+  const handleClick = (e) => {
+    if (e.target.closest('.card-actions')) {
+      return;
+    }
+    navigate(`/profile/${profile.id}`);
+  };
 
-    // Default image if none provided
-    const defaultImage = "https://via.placeholder.com/300x200?text=Profile+Image";
+  const handleToggleFollow = (e) => {
+    e.stopPropagation();
+    setIsFollowing(!isFollowing);
+    if (onToggleFollowStatus) {
+      onToggleFollowStatus(profile.id, !isFollowing);
+    }
+  };
 
-    // Simulate loading when showing map
-    const handleShowMap = (id) => {
-        setLoading(true);
-        toggleMap(id);
-        setTimeout(() => setLoading(false), 800);
-    };
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+  };
 
-    // Render the grid view of profiles
-    const renderGridView = () => (
-        <div className='cardwrapper'>
-            {data && data.length > 0 ? (
-                data.map((person) => (
-                    <Card 
-                        sx={{ 
-                            maxWidth: 345, 
-                            margin: '15px',
-                            boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
-                            transition: 'transform 0.3s ease',
-                            '&:hover': {
-                                transform: 'translateY(-5px)'
-                            }
-                        }} 
-                        key={person.id}
-                        className="profile-card"
-                    >
-                        {detailVisibility[person.id] ? (
-                            <div className="detail-view">
-                                <Button 
-                                    size="small" 
-                                    color="primary" 
-                                    onClick={() => toggleDetail(person.id)}
-                                    sx={{ position: 'absolute', right: 8, top: 8, zIndex: 10 }}
-                                >
-                                    Back
-                                </Button>
-                                <ActionAreaCard 
-                                    index={person} 
-                                    mapAlreadyOpen={mapVisibility[person.id]}
-                                />
-                            </div>
-                        ) : (
-                            <>
-                                <CardActionArea onClick={() => toggleDetail(person.id)}>
-                                    <CardMedia
-                                        component="img"
-                                        height="200"
-                                        image={person.image || defaultImage}
-                                        alt={`${person.firstName} ${person.lastName}`}
-                                        sx={{ 
-                                            objectFit: 'cover',
-                                            objectPosition: 'center top',
-                                            transition: 'transform 0.3s ease-in-out',
-                                            '&:hover': {
-                                                transform: 'scale(1.05)'
-                                            }
-                                        }}
-                                        onError={(e) => {
-                                            e.target.onerror = null;
-                                            e.target.src = defaultImage;
-                                        }}
-                                    />
-                                    <CardContent>
-                                        <Typography gutterBottom variant="h5" component="div" sx={{ fontWeight: 'bold' }}>
-                                            {person.firstName} {person.lastName}
-                                        </Typography>
-                                        
-                                        <Divider sx={{ my: 1 }} />
-                                        
-                                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                                            {person.email || 'No email provided'}
-                                        </Typography>
-                                        
-                                        {person.address && (
-                                            <Chip 
-                                                label={`${person.address.city || ''}, ${person.address.state || ''}`}
-                                                size="small"
-                                                color="primary"
-                                                variant="outlined"
-                                                sx={{ mt: 1 }}
-                                            />
-                                        )}
-                                    </CardContent>
-                                </CardActionArea>
-                                
-                                <CardActions sx={{ justifyContent: 'space-between', padding: '8px 16px' }}>
-                                    <Button 
-                                        size="small" 
-                                        variant="contained" 
-                                        color="primary" 
-                                        onClick={() => handleShowMap(person.id)}
-                                    >
-                                        View Location
-                                    </Button>
-                                    <Button 
-                                        size="small" 
-                                        variant="outlined" 
-                                        onClick={() => toggleDetail(person.id)}
-                                    >
-                                        View Details
-                                    </Button>
-                                </CardActions>
-                                
-                                {mapVisibility[person.id] && (
-                                    <div className='map-container'>
-                                        {loading ? (
-                                            <div className="loading-indicator">
-                                                <CircularProgress size={40} />
-                                                <Typography variant="body2" sx={{ mt: 1 }}>
-                                                    Loading map...
-                                                </Typography>
-                                            </div>
-                                        ) : (
-                                            <div className='map'>
-                                                <GoogleMap data={person} />
-                                                <Button 
-                                                    size="small" 
-                                                    variant="outlined" 
-                                                    color="secondary"
-                                                    onClick={() => toggleMap(person.id)}
-                                                    sx={{ mt: 1 }}
-                                                >
-                                                    Close Map
-                                                </Button>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                            </>
-                        )}
-                    </Card>
-                ))
-            ) : (
-                <div className="no-results">
-                    <Typography variant="h5" component="div" sx={{ textAlign: 'center', color: 'text.secondary' }}>
-                        No profiles found. Please add profiles in the admin panel.
-                    </Typography>
-                </div>
-            )}
-        </div>
-    );
+  const handleImageError = () => {
+    setImageError(true);
+  };
 
-    // Render the list view of profiles
-    const renderListView = () => (
-        <div className='list-wrapper'>
-            {data && data.length > 0 ? (
-                data.map((person) => (
-                    <Card 
-                        sx={{ 
-                            width: '100%', 
-                            margin: '10px 0',
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                            transition: 'box-shadow 0.3s ease',
-                            '&:hover': {
-                                boxShadow: '0 4px 8px rgba(0,0,0,0.2)'
-                            }
-                        }} 
-                        key={person.id}
-                        className="profile-list-item"
-                    >
-                        {detailVisibility[person.id] ? (
-                            <div className="detail-view">
-                                <Button 
-                                    size="small" 
-                                    color="primary" 
-                                    onClick={() => toggleDetail(person.id)}
-                                    sx={{ position: 'absolute', right: 8, top: 8, zIndex: 10 }}
-                                >
-                                    Back
-                                </Button>
-                                <ActionAreaCard 
-                                    index={person} 
-                                    mapAlreadyOpen={mapVisibility[person.id]}
-                                />
-                            </div>
-                        ) : (
-                            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' } }}>
-                                <Box sx={{ 
-                                    display: 'flex', 
-                                    p: 2,
-                                    width: { xs: '100%', sm: '200px' },
-                                    alignItems: 'center',
-                                    justifyContent: 'center' 
-                                }}>
-                                    <Avatar
-                                        src={person.image || defaultImage}
-                                        alt={`${person.firstName} ${person.lastName}`}
-                                        sx={{ 
-                                            width: 120, 
-                                            height: 120,
-                                            border: '1px solid #eee'
-                                        }}
-                                        onError={(e) => {
-                                            e.target.onerror = null;
-                                            e.target.src = defaultImage;
-                                        }}
-                                    />
-                                </Box>
-                                
-                                <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-                                    <CardContent sx={{ flex: '1 1 auto' }}>
-                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                                            <Typography variant="h5" component="div" sx={{ fontWeight: 'bold' }}>
-                                                {person.firstName} {person.lastName}
-                                            </Typography>
-                                            
-                                            {person.address && (
-                                                <Chip 
-                                                    label={`${person.address.city || ''}, ${person.address.state || ''}`}
-                                                    size="small"
-                                                    color="primary"
-                                                    variant="outlined"
-                                                />
-                                            )}
-                                        </Box>
-                                        
-                                        <Divider sx={{ my: 1 }} />
-                                        
-                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-                                            {person.email && (
-                                                <Typography variant="body2" color="text.secondary">
-                                                    Email: {person.email}
-                                                </Typography>
-                                            )}
-                                            
-                                            {person.phone && (
-                                                <Typography variant="body2" color="text.secondary">
-                                                    Phone: {person.phone}
-                                                </Typography>
-                                            )}
-                                            
-                                            {person.company && (
-                                                <Typography variant="body2" color="text.secondary">
-                                                    Company: {person.company.name}
-                                                </Typography>
-                                            )}
-                                        </Box>
-                                    </CardContent>
-                                    
-                                    <CardActions sx={{ justifyContent: 'flex-end', p: 2 }}>
-                                        <Button 
-                                            size="small" 
-                                            variant="contained" 
-                                            color="primary" 
-                                            onClick={() => handleShowMap(person.id)}
-                                        >
-                                            View Location
-                                        </Button>
-                                        <Button 
-                                            size="small" 
-                                            variant="outlined" 
-                                            onClick={() => toggleDetail(person.id)}
-                                        >
-                                            View Details
-                                        </Button>
-                                    </CardActions>
-                                </Box>
-                            </Box>
-                        )}
-                        
-                        {mapVisibility[person.id] && (
-                            <div className='map-container'>
-                                {loading ? (
-                                    <div className="loading-indicator">
-                                        <CircularProgress size={40} />
-                                        <Typography variant="body2" sx={{ mt: 1 }}>
-                                            Loading map...
-                                        </Typography>
-                                    </div>
-                                ) : (
-                                    <div className='map'>
-                                        <GoogleMap data={person} />
-                                        <Button 
-                                            size="small" 
-                                            variant="outlined" 
-                                            color="secondary"
-                                            onClick={() => toggleMap(person.id)}
-                                            sx={{ mt: 1 }}
-                                        >
-                                            Close Map
-                                        </Button>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </Card>
-                ))
-            ) : (
-                <div className="no-results">
-                    <Typography variant="h5" component="div" sx={{ textAlign: 'center', color: 'text.secondary' }}>
-                        No profiles found. Please add profiles in the admin panel.
-                    </Typography>
-                </div>
-            )}
-        </div>
-    );
+  return (
+    <MuiCard 
+      className={`profile-card ${viewMode === 'list' ? 'list-view' : 'grid-view'}`} 
+      elevation={3}
+    >
+      <CardActionArea onClick={handleClick}>
+        <Box className={`card-content-wrapper ${viewMode === 'list' ? 'list-content' : 'grid-content'}`}>
+          {viewMode === 'grid' && (
+            <Box className="card-media-container">
+              {!imageLoaded && !imageError && (
+                <Skeleton 
+                  variant="rectangular" 
+                  animation="wave" 
+                  width="100%" 
+                  height={140} 
+                />
+              )}
+              <CardMedia
+                component="img"
+                height="140"
+                image={imageError ? defaultImage : (profile.image || defaultImage)}
+                alt={`${profile.firstName} ${profile.lastName}`}
+                onLoad={handleImageLoad}
+                onError={handleImageError}
+                className={!imageLoaded ? "hidden" : ""}
+              />
+            </Box>
+          )}
+          
+          <CardContent className={viewMode === 'list' ? 'list-card-content' : 'grid-card-content'}>
+            <Box className="card-header">
+              {viewMode === 'list' && (
+                <Avatar 
+                  src={imageError ? defaultImage : (profile.image || defaultImage)}
+                  alt={`${profile.firstName} ${profile.lastName}`}
+                  onError={handleImageError}
+                  className="list-avatar"
+                />
+              )}
+              <Box className="card-title-container">
+                <Typography variant="h6" component="div" className="card-title">
+                  {profile.firstName} {profile.lastName}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" className="card-subtitle">
+                  {profile.company && profile.company.name 
+                    ? profile.company.name 
+                    : "Independent"}
+                </Typography>
+              </Box>
+            </Box>
 
-    return viewMode === 'grid' ? renderGridView() : renderListView();
+            <Box className="card-details">
+              <Box className="profile-detail-item">
+                <LocationOnIcon fontSize="small" color="action" />
+                <Typography variant="body2" color="text.secondary">
+                  {profile.address 
+                    ? `${profile.address.city}, ${profile.address.state}` 
+                    : "Location not available"}
+                </Typography>
+              </Box>
+              
+              <Box className="profile-detail-item">
+                <EmailIcon fontSize="small" color="action" />
+                <Typography variant="body2" color="text.secondary" noWrap>
+                  {profile.email || "Email not available"}
+                </Typography>
+              </Box>
+              
+              <Box className="profile-detail-item">
+                <PhoneIcon fontSize="small" color="action" />
+                <Typography variant="body2" color="text.secondary">
+                  {profile.phone || "Phone not available"}
+                </Typography>
+              </Box>
+            </Box>
+            
+            <Box className="card-tags">
+              {profile.tags && profile.tags.slice(0, viewMode === 'list' ? 3 : 2).map((tag, index) => (
+                <Chip 
+                  key={index} 
+                  label={tag} 
+                  size="small" 
+                  className="profile-tag" 
+                />
+              ))}
+              {profile.tags && profile.tags.length > (viewMode === 'list' ? 3 : 2) && (
+                <Chip 
+                  label={`+${profile.tags.length - (viewMode === 'list' ? 3 : 2)}`} 
+                  size="small" 
+                  variant="outlined" 
+                  className="profile-tag" 
+                />
+              )}
+            </Box>
+          </CardContent>
+        </Box>
+      </CardActionArea>
+      
+      <Box className="card-actions">
+        <Tooltip title={isFollowing ? "Unfollow" : "Follow"}>
+          <IconButton 
+            color={isFollowing ? "primary" : "default"} 
+            onClick={handleToggleFollow}
+            className="follow-button"
+          >
+            {isFollowing ? <PersonRemoveIcon /> : <PersonAddIcon />}
+          </IconButton>
+        </Tooltip>
+      </Box>
+    </MuiCard>
+  );
 }
+
+export default Card;
